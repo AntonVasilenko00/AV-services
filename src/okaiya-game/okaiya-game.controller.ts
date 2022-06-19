@@ -4,6 +4,6 @@ import { Controller, Get } from '@nestjs/common';
 export class OkaiyaGameController {
   @Get('/')
   getIndex() {
-    return 'Okaya';
+    return 'Okayia';
   }
 }
