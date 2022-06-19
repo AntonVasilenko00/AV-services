@@ -1,9 +1,9 @@
-import {Controller, Get} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller('okaiya-game')
 export class OkaiyaGameController {
-  @Get("/")
-  getIndex(){
-    return "Okaya"
+  @Get('/')
+  getIndex() {
+    return 'Okaya';
   }
 }
