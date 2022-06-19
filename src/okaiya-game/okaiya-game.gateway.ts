@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { v4 } from 'uuid';
 
-@WebSocketGateway(80)
+@WebSocketGateway()
 export class OkaiyaGameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
