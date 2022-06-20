@@ -20,9 +20,12 @@ export class OkaiyaGameGateway
     return 'Hello world!';
   }
 
-  afterInit(server: any): any {}
+  afterInit(server: any): any {
+    console.log("Gateway init")
+  }
 
   handleConnection(client: any, ...args: any[]): any {
+    console.log("CLient connected")
     return;
   }
 
