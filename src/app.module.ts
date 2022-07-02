@@ -1,13 +1,26 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OkaiyaGameModule } from './okaiya-game/okaiya-game.module';
+import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [OkaiyaGameModule, UsersModule, ConfigModule.forRoot(), MongooseModule.forRoot(`mongodb+srv://antonvasilenko:${process.env.MONGO_DB_USER_PASSWORD}@maincluster.g8rf6.mongodb.net/?retryWrites=true&w=majority`, {dbName: process.env.MONGO_DB_NAME })],
+  imports: [
+    OkaiyaGameModule,
+    UsersModule,
+    TypeOrmModule.forRoot({
+      url: "postgres://rzzwqjveuoznlk:d23ef1a2c65eaeddb7f5d17bc7c17dcaebfe6ca2e46ae11aaa044bc16818cce2@ec2-54-75-184-144.eu-west-1.compute.amazonaws.com:5432/d6mividaqovmdo",
+      type: 'postgres',
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      entities: [User],
+      synchronize: true, // This for development
+      autoLoadEntities: true,
+    })
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,14 +1,20 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-export type UserDocument = User & Document
-
-@Schema()
+@Entity()
 export class User {
-    @Prop()
-    name: string;
+    @PrimaryGeneratedColumn()
+    id: number;
+  
+    @Column()
+    firstName: string;
+  
+    @Column()
+    lastName: string;
 
-    @Prop()
-    password: string
+    @Column({unique: true})
+    nickName: string;
+
+    @Column()
+    password: string;
+
 }
-
-export const UserSchema = SchemaFactory.createForClass(User)
