@@ -1,12 +1,14 @@
-import {Body, Controller, Post} from '@nestjs/common';
+import {Body, Controller, Post, Request, UseGuards} from '@nestjs/common';
+import {LocalAuthGuard} from './local-auth.guard'
 
 @Controller('auth')
 export class AuthController {
 
-  @Post('/login')
-  login(@Body() loginDto) {
-    return 'login'
 
+  @UseGuards(LocalAuthGuard)
+  @Post('/login')
+  login(@Request() req) {
+    return req.user
   }
 
   @Post('/signup')
