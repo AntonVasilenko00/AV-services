@@ -15,7 +15,6 @@ async function bootstrap() {
     .setTitle('AV-services')
     .setDescription('AV-services API description')
     .setVersion('1.0')
-    .addTag('users')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
