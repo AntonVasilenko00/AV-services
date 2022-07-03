@@ -3,28 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OkaiyaGameModule } from './okaiya-game/okaiya-game.module';
-import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import dbConfig from './config/db';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        url: config.get('DATABASE_URL'),
-        type: 'postgres',
-        ssl: {
-          rejectUnauthorized: false,
-        },
-        entities: [User],
-        synchronize: true, // This for development
-        autoLoadEntities: true,
-      }),
-      inject: [ConfigService],
-    }),
+    TypeOrmModule.forRootAsync(dbConfig),
     OkaiyaGameModule,
     UsersModule,
     AuthModule,
