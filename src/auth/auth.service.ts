@@ -7,7 +7,7 @@ import { UsersService } from '../users/users.service';
 import * as _ from 'lodash';
 import { User } from '../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { IAuthResponse } from './auth.controller';
+import { AuthResponse } from './auth.controller';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +31,7 @@ export class AuthService {
     return _.omit(user, 'password');
   }
 
-  async login(user: User): Promise<IAuthResponse> {
+  async login(user: User): Promise<AuthResponse> {
     const payload = { username: user.userName, sub: user.id };
 
     return {
