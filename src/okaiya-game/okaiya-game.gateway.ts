@@ -7,15 +7,22 @@ import {
   WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
-import { v4 } from 'uuid';
 import { Logger } from '@nestjs/common';
 import { OkaiyaGameService } from './okaiya-game.service';
+import { AuthService } from '../auth/auth.service';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 @WebSocketGateway({ path: '/okaiya/gateway' })
 export class OkaiyaGameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private readonly okaiyaGameService: OkaiyaGameService) {}
+  constructor(
+    private readonly okaiyaGameService: OkaiyaGameService,
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   private readonly logger = new Logger(OkaiyaGameGateway.name);
 
@@ -36,7 +43,10 @@ export class OkaiyaGameGateway
   }
 
   @SubscribeMessage('login')
-  handleLogin(client: any): WsResponse {
+  async handleLogin(
+    client: any,
+    { token }: { token: string },
+  ): Promise<WsResponse> {
     if (client.id) {
       return {
         event: 'login',
@@ -44,16 +54,34 @@ export class OkaiyaGameGateway
           error: `You are already logged in with id=${client.id}`,
         },
       };
-    } else {
-      const uid = v4();
-      client.id = uid;
+    }
 
-      this.logger.log(`Client logged in, id=${uid}`);
+    if (!token)
+      return {
+        event: 'login',
+        data: {
+          error: `Token not provided`,
+        },
+      };
+
+    try {
+      const { sub, username } = await this.jwtService.verify(token);
+      client.id = sub;
+      client.username = username;
+
+      this.logger.log(`Client logged in, id=${sub}`);
 
       return {
         event: 'login',
         data: {
-          userId: uid,
+          userId: sub,
+        },
+      };
+    } catch (e) {
+      return {
+        event: 'login',
+        data: {
+          error: `Token invalid`,
         },
       };
     }

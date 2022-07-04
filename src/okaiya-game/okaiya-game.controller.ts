@@ -7,8 +7,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-@ApiTags('okaiya-game')
-@Controller('okaiya-game')
+@ApiTags('okaiya')
+@Controller('okaiya')
 export class OkaiyaGameController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Health-check endpoint' })
