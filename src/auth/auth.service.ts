@@ -7,7 +7,7 @@ import { UsersService } from '../users/users.service';
 import * as _ from 'lodash';
 import { User } from '../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { AuthResponse } from './auth.controller';
+import { AuthResponse } from './dto/auth-response.dto';
 
 @Injectable()
 export class AuthService {

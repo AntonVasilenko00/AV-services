@@ -1,10 +1,16 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('okaiya-game')
 @Controller('okaiya-game')
 export class OkaiyaGameController {
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Health-check endpoint' })
   @ApiOkResponse()
   @UseGuards(JwtAuthGuard)

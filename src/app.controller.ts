@@ -8,7 +8,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @ApiOperation({ summary: 'Application Health-check endpoint' })
-  @ApiOkResponse()
+  @ApiOkResponse({ description: 'App is running.' })
   @Get('/')
   getServer(): string {
     return this.appService.getServer();

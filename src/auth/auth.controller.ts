@@ -18,14 +18,10 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
-
-export class AuthResponse {
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' })
-  access_token: string;
-}
+import { LoginDto } from './dto/login.dto';
+import { AuthResponse } from './dto/auth-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -42,7 +38,10 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(200)
   @Post('/login')
-  async login(@Request() req): Promise<AuthResponse> {
+  async login(
+    @Request() req,
+    @Body() loginDto: LoginDto,
+  ): Promise<AuthResponse> {
     return await this.authService.login(req.user);
   }
 
