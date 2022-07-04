@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as _ from 'lodash';
-import { shuffle } from 'lodash';
+import { InjectRepository } from '@nestjs/typeorm';
+import { OkaiyaGame } from './entities/okaiya.game.entity';
+import { Repository } from 'typeorm';
+import { FinaliseGameDto } from './dto/finalise-game.dto';
 
 export interface IRoom {
   players: string[];
@@ -9,12 +12,22 @@ export interface IRoom {
 
 @Injectable()
 export class OkaiyaGameService {
+  constructor(
+    @InjectRepository(OkaiyaGame)
+    private readonly okaiyaGameRepository: Repository<OkaiyaGame>,
+  ) {}
   private readonly logger = new Logger(OkaiyaGameService.name);
 
   rooms: IRoom[] = [];
   roomsNumber = 9;
   maxPlayers = 2;
   boardDimension = 4;
+
+  public async create(createOkaiyaGameDto: FinaliseGameDto) {
+    const game = this.okaiyaGameRepository.create(createOkaiyaGameDto);
+
+    return await this.okaiyaGameRepository.save(game);
+  }
 
   public initRooms(): void {
     for (let i = 0; i < this.roomsNumber; i++) {

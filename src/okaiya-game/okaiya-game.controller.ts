@@ -7,10 +7,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FinaliseGameDto } from './dto/finalise-game.dto';
+import { OkaiyaGameService } from './okaiya-game.service';
 
 @ApiTags('okaiya')
 @Controller('okaiya')
 export class OkaiyaGameController {
+  constructor(private readonly okaiyaGameService: OkaiyaGameService) {}
+
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Health-check endpoint' })
   @ApiOkResponse()
@@ -22,6 +25,6 @@ export class OkaiyaGameController {
 
   @Post('/finalise-game')
   finaliseGame(@Body() finaliseGameDto: FinaliseGameDto) {
-    return;
+    return this.okaiyaGameService.create(finaliseGameDto);
   }
 }

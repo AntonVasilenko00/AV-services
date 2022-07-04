@@ -1,6 +1,7 @@
 import { User } from '../users/entities/user.entity';
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { OkaiyaGame } from '../okaiya-game/entities/okaiya.game.entity';
 
 export default {
   imports: [ConfigModule],
@@ -10,7 +11,7 @@ export default {
     ssl: {
       rejectUnauthorized: false,
     },
-    entities: [User],
+    entities: [User, OkaiyaGame],
     synchronize: true, // This for development
     autoLoadEntities: true,
   }),
