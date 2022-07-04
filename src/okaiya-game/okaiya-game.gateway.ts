@@ -92,6 +92,14 @@ export class OkaiyaGameGateway
     client: any,
     { roomNumber }: { roomNumber: number },
   ): WsResponse {
+    if (!roomNumber)
+      return {
+        event: 'join-room',
+        data: {
+          error: 'roomNumber is not provided.',
+        },
+      };
+
     if (!client.id)
       return {
         event: 'join-room',
@@ -138,6 +146,35 @@ export class OkaiyaGameGateway
         }
       });
     }
+  }
+
+  @SubscribeMessage('room-message')
+  handleRoomMessageSend(client: any, payload: string): WsResponse {
+    if (!client.id || !client.username)
+      return {
+        event: 'room-message',
+        data: { error: 'user is not logged in' },
+      };
+
+    if (!client.roomNumber)
+      return {
+        event: 'room-message',
+        data: { error: 'Enter a room first.' },
+      };
+
+    const response = {
+      event: 'room-message',
+      data: {
+        senderId: client.id,
+        senderUserName: client.username,
+        message: payload,
+      },
+    };
+    this.server.clients.forEach((enemy) => {
+      if (enemy.id !== client.id && client.roomNumber === enemy.roomNumber) {
+        enemy.send(JSON.stringify(response));
+      }
+    });
   }
 
   handleDisconnect(client: any): any {

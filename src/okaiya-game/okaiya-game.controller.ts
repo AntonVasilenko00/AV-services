@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   ApiBearerAuth,
@@ -6,6 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { FinaliseGameDto } from './dto/finalise-game.dto';
 
 @ApiTags('okaiya')
 @Controller('okaiya')
@@ -17,5 +18,10 @@ export class OkaiyaGameController {
   @Get('/')
   getIndex() {
     return 'Okayia!';
+  }
+
+  @Post('/finalise-game')
+  finaliseGame(@Body() finaliseGameDto: FinaliseGameDto) {
+    return;
   }
 }
