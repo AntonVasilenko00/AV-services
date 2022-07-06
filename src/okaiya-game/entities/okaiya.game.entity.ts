@@ -3,6 +3,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,19 +17,15 @@ export class OkaiyaGame extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: 23 })
-  @Column()
-  winnerId: number;
-
-  @ManyToOne((type) => User)
-  @JoinColumn({ name: 'looserId' })
-  looser: User;
-
-  @ManyToOne((type) => User)
-  @JoinColumn({ name: 'winnerId' })
-  winner: User;
-
   @ApiProperty({ example: true })
   @Column({ default: false })
   isDraw: boolean;
+
+  @ManyToMany((type) => User)
+  @JoinTable()
+  players: User[];
+
+  @ManyToOne((type) => User)
+  @JoinColumn()
+  winner: User;
 }

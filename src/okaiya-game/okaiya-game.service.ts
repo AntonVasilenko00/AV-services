@@ -1,9 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import * as _ from 'lodash';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OkaiyaGame } from './entities/okaiya.game.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { FinaliseGameDto } from './dto/finalise-game.dto';
+import { UsersService } from '../users/users.service';
 
 export interface IRoom {
   players: string[];
@@ -15,6 +21,7 @@ export class OkaiyaGameService {
   constructor(
     @InjectRepository(OkaiyaGame)
     private readonly okaiyaGameRepository: Repository<OkaiyaGame>,
+    private readonly usersService: UsersService,
   ) {}
   private readonly logger = new Logger(OkaiyaGameService.name);
 
@@ -26,7 +33,61 @@ export class OkaiyaGameService {
   public async create(createOkaiyaGameDto: FinaliseGameDto) {
     const game = this.okaiyaGameRepository.create(createOkaiyaGameDto);
 
-    return await this.okaiyaGameRepository.save(game);
+    game.players = await Promise.all(
+      createOkaiyaGameDto.userIds.map(async (id) => {
+        const player = await this.usersService.findOne(id);
+
+        if (!player)
+          throw new NotFoundException(`user with id=${id} not found.`);
+
+        return player;
+      }),
+    );
+    const { winnerId } = createOkaiyaGameDto;
+    if (winnerId) {
+      if (!createOkaiyaGameDto.userIds.includes(winnerId))
+        throw new BadRequestException(`winnerId must be inside userIds array.`);
+
+      if (createOkaiyaGameDto.isDraw)
+        throw new BadRequestException(
+          'there can not be a winner in a draw game.',
+        );
+
+      const winner = await this.usersService.findOne(
+        createOkaiyaGameDto.winnerId,
+      );
+
+      if (!winner)
+        throw new NotFoundException(
+          `User with id=${createOkaiyaGameDto.winnerId}`,
+        );
+
+      game.winner = winner;
+    } else {
+      game.isDraw = true;
+    }
+    const savedGame = await this.okaiyaGameRepository.save(game);
+
+    return await this.findOne(savedGame.id);
+  }
+
+  public async findAll(): Promise<OkaiyaGame[]> {
+    return this.okaiyaGameRepository.find({
+      relations: ['players', 'winner'],
+      loadRelationIds: true,
+    });
+  }
+
+  public async findOne(id: number): Promise<OkaiyaGame> {
+    return this.okaiyaGameRepository.findOne({
+      relations: ['players', 'winner'],
+      loadRelationIds: true,
+      where: { id },
+    });
+  }
+
+  public async clearAll(): Promise<DeleteResult> {
+    return await this.okaiyaGameRepository.delete({});
   }
 
   public initRooms(): void {

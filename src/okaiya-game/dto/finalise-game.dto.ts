@@ -1,15 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
 export class FinaliseGameDto {
-  @ApiProperty()
+  @ApiProperty({ example: [20, 41] })
   @IsNotEmpty()
-  winnerId: number;
+  @IsArray()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  userIds: number[];
 
-  @ApiProperty()
-  @IsNotEmpty()
-  looserId: number;
+  @ApiProperty({ example: 20 })
+  @IsOptional()
+  winnerId?: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: false })
+  @IsOptional()
   isDraw?: boolean;
 }

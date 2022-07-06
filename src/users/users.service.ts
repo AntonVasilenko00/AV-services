@@ -20,7 +20,12 @@ export class UsersService {
     return user;
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(ids?: number[]): Promise<User[]> {
+    if (ids && ids.length > 0)
+      return await Promise.all(
+        ids.map((id) => this.usersRepository.findOneBy({ id })),
+      );
+
     return await this.usersRepository.find();
   }
 
